@@ -4,9 +4,9 @@ Tool for solving math problems involving finding an expression for a given value
 ## background
 
 The Numberphile video's
-* (The 10,958 Problem - Numberphile)[https://www.youtube.com/watch?v=-ruC5A9EzzE]
-* (A 10,958 Solution - Numberphile)[https://www.youtube.com/watch?v=pasyRUj7UwM]
-* (Concatenation (extra footage) - Numberphile)[https://www.youtube.com/watch?v=LgnoYsbI7Uc]
+* [The 10,958 Problem - Numberphile](https://www.youtube.com/watch?v=-ruC5A9EzzE)
+* [A 10,958 Solution - Numberphile](https://www.youtube.com/watch?v=pasyRUj7UwM)
+* [Concatenation (extra footage) - Numberphile](https://www.youtube.com/watch?v=LgnoYsbI7Uc)
 
 Discussion
 * https://www.reddit.com/r/BradyHaran/comments/6628q2/the_10958_problem_numberphile/
