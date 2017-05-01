@@ -18,7 +18,7 @@ Author: Willem Hengeveld <itsme@xs4all.nl>
 #include "argparse.h"
 #include <sys/time.h>
 /*
-clang++ -O3 -I ~/myprj/cpputils fourfour.cpp -std=c++1z
+clang++ -O3 -I ~/myprj/cpputils findexpr.cpp -std=c++1z
 
 todo:
    support unary operators, like negation
