@@ -14,7 +14,7 @@ Author: Willem Hengeveld <itsme@xs4all.nl>
 #include <memory>
 #include <functional>
 #include <cmath>
-#include <experimental/optional>
+#include <optional>
 #include "argparse.h"
 #include <sys/time.h>
 /*
@@ -341,7 +341,7 @@ int main(int argc,char**argv)
     std::vector<int> nums = { 1,2,3,4,5,6,7,8,9 };
     int digit = -1;
     int count = -1;
-    std::experimental::optional<int> target;
+    std::optional<int> target;
     for (auto& arg : ArgParser(argc, argv))
        switch (arg.option())
        {
