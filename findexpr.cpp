@@ -15,7 +15,8 @@ Author: Willem Hengeveld <itsme@xs4all.nl>
 #include <functional>
 #include <cmath>
 #include <optional>
-#include "argparse.h"
+#include <cpputils/argparse.h>
+#include <cpputils/string-split.h>
 #ifndef _WIN32
 #include <sys/time.h>
 #endif
@@ -82,26 +83,6 @@ struct timer {
 // the base type we do our calculations in.
 using T = double;
 
-// represent an operation
-struct Operation {
-
-    // name  - the name of the operation
-    // infix - when available: a symbols for infix operator notation ( a+b, instead of add(a,b) )
-    // n     - the nr of arguments to the operation
-    // prec  - the operator precedence
-    // fn    - a lambda calculating this operation.
-    Operation( std::string name, std::string infix, int n, int prec, std::function<T(std::vector<T> args)> fn)
-        : name(name), infix(infix), n(n), precedence(prec), fn(fn)
-    {
-    }
-
-    std::string name;
-    std::string infix;
-    int n;
-    int precedence;
-    std::function<T(std::vector<T> args)> fn;
-};
-
 // integer exponentiation
 int intpow(int a, int b)
 {
@@ -130,6 +111,27 @@ double tenfactor(double x)
     return f;
 }
 
+
+// represent an operation
+struct Operation {
+
+    // name  - the name of the operation
+    // infix - when available: a symbols for infix operator notation ( a+b, instead of add(a,b) )
+    // n     - the nr of arguments to the operation
+    // prec  - the operator precedence
+    // fn    - a lambda calculating this operation.
+    Operation( std::string name, std::string infix, int n, int prec, std::function<T(std::vector<T> args)> fn)
+        : name(name), infix(infix), n(n), precedence(prec), fn(fn)
+    {
+    }
+
+    std::string name;
+    std::string infix;
+    int n;
+    int precedence;
+    std::function<T(std::vector<T> args)> fn;
+};
+
 // list of supported operations
 std::vector<Operation> oplist{
     { "add", "+",   2, 1, [](std::vector<T> args){ return args[0]+args[1]; } },
@@ -138,7 +140,10 @@ std::vector<Operation> oplist{
     { "div", "/",   2, 3, [](std::vector<T> args){ return args[0]/args[1]; } },
     { "pow", "^",   2, 4, [](std::vector<T> args){ return pow(args[0],args[1]); } },
     { "cat", "||",  2, 5, [](std::vector<T> args){ return args[0]*tenfactor(args[1])+args[1]; } },
+
+    // NOTE: unary ops not yet supported.
     { "neg", "-",   1, 2, [](std::vector<T> args){ return -args[0]; } },
+    { "sqrt", "√",  1, 2, [](std::vector<T> args){ return sqrt(args[0]); } },
 };
 int precedence(Operation*op)
 {
@@ -210,7 +215,7 @@ struct Expr : Node {
             }
             else if (args.size()==1) {
                 // unary operator
-                os << "(" << "-" << args[0] << ")";
+                os << "f" << "(" << args[0] << ")";
             }
             else {
                 // more args: represent as function call.
@@ -275,7 +280,6 @@ struct Expr : Node {
     {
         return std::make_shared<Expr>(l);
     }
-
 };
 
 // generate all possible binary tree shapes with n leaves.
@@ -298,6 +302,15 @@ void enumtrees(int nleaves, std::function<void(Node::ptr)> cb)
     }
 }
 
+/*
+unary ops:
+    insert-in-tree at position
+
+tree-position:  use number to make l/r descision at each node,
+    then insert at that position
+    root -> unary -> node
+
+ */
 template<typename P>
 struct generator {
     P cur;
@@ -373,6 +386,7 @@ int main(int argc,char**argv)
     std::vector<int> nums = { 1,2,3,4,5,6,7,8,9 };
     int digit = -1;
     int count = -1;
+    std::string numsspec;
     std::optional<int> target;
     for (auto& arg : ArgParser(argc, argv))
        switch (arg.option())
@@ -380,6 +394,7 @@ int main(int argc,char**argv)
            case 'r': std::reverse(nums.begin(), nums.end()); break;
            case 'd': digit = arg.getint(); break;
            case 'n': count = arg.getint(); break;
+           case 'v': numsspec = arg.getstr(); break;
            case 't': target = arg.getint(); break;
            default:
                      std::cout << "Usage: findexpr [-r] [-d DIGIT] [-n N] -[t TARGET]\n";
@@ -390,7 +405,12 @@ int main(int argc,char**argv)
                      return 1;
 
        }
-    if (count > 0 && digit>0) {
+    if (!numsspec.empty()) {
+        nums.clear();
+        for (auto s : stringsplitter<std::string>(numsspec, ","))
+            nums.push_back(strtol(s.c_str(), 0, 0));
+    }
+    else if (count > 0 && digit>0) {
         nums.clear();
         nums.resize(count, digit);
     }
