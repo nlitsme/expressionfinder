@@ -20,6 +20,7 @@ Author: Willem Hengeveld <itsme@xs4all.nl>
 #ifndef _WIN32
 #include <sys/time.h>
 #endif
+#include <ctime>
 /*
 clang++ -O3 -I ~/myprj/cpputils findexpr.cpp -std=c++1z
 
